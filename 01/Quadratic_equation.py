@@ -23,6 +23,7 @@ def solve_equation(a, b, c, verbose=False):
         if math.isclose(b, 0, abs_tol=1.0e-10):
             if math.isclose(c, 0, abs_tol=1.0e-10):
                 if verbose:
+                    # every real number could be a solution
                     print("\U00002200x\U00002208\U0000211D")
                 return 0, 0
             else:
