@@ -1,23 +1,25 @@
+""" CustomList"""
 import math
 
 
 class CustomList(list):
+    """ CustomList"""
     def __add__(self, other):
         if len(self) > len(other):
             result = self[::]
-            for i in range(len(other)):
-                result[i] += other[i]
+            for i, element in enumerate(other):
+                result[i] += element
         else:
             result = other[::]
-            for i in range(len(self)):
-                result[i] += self[i]
+            for i, element in enumerate(self):
+                result[i] += element
         return CustomList(result)
 
     def __sub__(self, other):
         result = self[::]
         if len(self) > len(other):
-            for i in range(len(other)):
-                result[i] -= other[i]
+            for i, element in enumerate(other):
+                result[i] -= element
         else:
             i = 0
             while i < len(self):
@@ -54,9 +56,3 @@ class CustomList(list):
 
     def __str__(self):
         return '; '.join((' '.join(map(str, self)), str(sum(self))))
-
-
-# a = CustomList((1, 2, 3, 4, 5))
-# b = CustomList((1, 2, 3, 4, 5.00000000001))
-# print(a == b)
-# print(help(math.isclose))
