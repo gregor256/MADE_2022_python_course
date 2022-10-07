@@ -12,12 +12,12 @@ class Player:
                self.semi_diagonal == 3
 
     def update(self, new_row, new_col):
-        self.row[new_col] += 1
-        self.col[new_row] += 1
+        self.col[new_col] += 1
+        self.row[new_row] += 1
         if (new_row, new_col) in ((0, 0), (1, 1), (2, 2)):
             self.diagonal += 1
         if (new_row, new_col) in ((0, 2), (1, 1), (2, 0)):
-            self.diagonal += 1
+            self.semi_diagonal += 1
 
 
 class TicTac:
@@ -31,19 +31,21 @@ class TicTac:
     def hello():
         print(
             '''
-    Assume board looks like:
-        123
-        456
-        789
-    input number to draw a symbol. 
-        ...
-        ...
-        ...
-        '''
+Input row, column separated by whitespace.
+ 
+  012
+0|---
+1|---
+2|---
+'''
         )
 
     def input_analysis(self, users_input):
         result = {'is_valid': False}
+        if users_input[0] == 'show':
+            self.show_board()
+            result['message'] = 'Good luck!'
+            return result
         if len(users_input) != 2:
             result['message'] = '2 coordinates expected. '
         elif not all([x.isdigit() for x in users_input]):
@@ -79,11 +81,18 @@ class TicTac:
             analysis_result = self.input_analysis(users_input)
             if analysis_result['is_valid']:
                 row, col = analysis_result['content']
-                self.matrix[row][col] = 1
+                if self.step % 2 == 0:
+                    self.matrix[row][col] = 1
+                    self.player_x.update(row, col)
+                else:
+                    self.matrix[row][col] = 0
+                    self.player_0.update(row, col)
+                self.step += 1
                 self.show_board()
-                if self.player_x.won:
+                print(self.player_x.__dict__)
+                if self.player_x.won():
                     return 'X won'
-                elif self.player_0.won:
+                elif self.player_0.won():
                     return '0 won'
             else:
                 print(analysis_result['message'])
@@ -96,4 +105,7 @@ class TicTac:
 
 if __name__ == "__main__":
     game = TicTac()
-    print(game.start_game())
+    game_result = game.start_game()
+    print('*********')
+    print(f'* {game_result} *')
+    print('*********')
