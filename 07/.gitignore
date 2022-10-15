@@ -1,0 +1,6 @@
+__pycache__
+.coverage
+*.pyc
+write_csv.csv
+write_json.json
+write_txt.txt
