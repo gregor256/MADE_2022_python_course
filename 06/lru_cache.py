@@ -4,8 +4,8 @@ from collections import deque
 
 class LRUCache:
     """LRUCache"""
-    def __init__(self, max_size):
-        self.max_size = max_size
+    def __init__(self, limit=42):
+        self.limit = limit
         self.dictionary = {}
         self.order = deque()
 
@@ -18,7 +18,12 @@ class LRUCache:
 
     def add(self, key, value):
         """LRUCache"""
-        if len(self.dictionary) >= self.max_size:
+        if key in self.dictionary:
+            self.get(key)
+            if self.dictionary[key] != value:
+                self.dictionary[key] = value
+            return
+        if len(self.dictionary) >= self.limit:
             to_remove = self.order.popleft()
             self.dictionary.pop(to_remove)
         self.dictionary[key] = value
