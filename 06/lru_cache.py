@@ -4,6 +4,7 @@ from collections import deque
 
 class LRUCache:
     """LRUCache"""
+
     def __init__(self, limit=42):
         self.limit = limit
         self.dictionary = {}
@@ -16,7 +17,7 @@ class LRUCache:
             self.order.append(key)
         return self.dictionary.get(key)
 
-    def add(self, key, value):
+    def set(self, key, value):
         """LRUCache"""
         if key in self.dictionary:
             self.get(key)
