@@ -25,6 +25,11 @@ python client.py NUM_WORKERS FILE_CONTAINIG_URLS
 NUM_WORKERS - число потоков на клиентском приложениии.
 FILE_CONTAINIG_URLS - файл, в котором перечислены урлы, каждый урл на новой строке.
 
+# Testing:
+```
+pytest
+```
+
 
 
 
