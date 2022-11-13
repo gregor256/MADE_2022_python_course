@@ -2,3 +2,4 @@ __pycache__
 try.py
 .pytest_cache
 generate_links_file.py
+.venv

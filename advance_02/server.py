@@ -8,13 +8,15 @@ import requests
 from bs4 import BeautifulSoup
 import click
 
+JOBS_FINISHED = 0
+
 
 def beautifulsoup_extract_text_fallback(response_content):
     """Delete html tags"""
     if isinstance(response_content, str):
         soup = BeautifulSoup(response_content, 'html.parser')
     else:
-        soup = BeautifulSoup(response_content.text(), 'html.parser')
+        soup = BeautifulSoup(response_content.text, 'html.parser')
     text = soup.find_all(text=True)
 
     cleaned_text = ''
@@ -43,7 +45,6 @@ def get_most_common_word(url, top_k_frequent):
     request = requests.get(url, timeout=60)
     # delete tags and make all words lowercase
     clean_text = beautifulsoup_extract_text_fallback(request).lower()
-    print(clean_text)
     # keep only letters and spaces
     letters_text = re.sub(r'[^a-zA-Zа-яА-Я ]', '', clean_text)
     # make list from text
@@ -56,12 +57,13 @@ def get_most_common_word(url, top_k_frequent):
 
 
 HOST = "127.0.0.1"
-PORT = 5000
+PORT = 5004
 GARBAGE = ['the', 'of', 'and', 'in']
 
 
-def communicate(connections_queue, top_k_frequent):
+def communicate(connections_queue, top_k_frequent, thread_lock):
     """communicate"""
+    global JOBS_FINISHED
     while True:
         try:
             current_connection = connections_queue.get()
@@ -80,12 +82,20 @@ def communicate(connections_queue, top_k_frequent):
         current_connection.sendall(data_str.encode())
         current_connection.close()
 
+        thread_lock.acquire()
+        temp_jobs_finished = JOBS_FINISHED
+        temp_jobs_finished += 1
+        print(f'Processed urls total amount: {temp_jobs_finished}')
+        JOBS_FINISHED = temp_jobs_finished
+        thread_lock.release()
+
 
 @click.command(name="multithread_server")
 @click.argument('n_threads')
 @click.argument('top_k_frequent', type=int)
 def multithread_server(n_threads, top_k_frequent):
     """multithread_server"""
+    program_lock = threading.Lock()
     top_k_most_frequent = int(top_k_frequent)
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as active_socket:
         active_socket.bind((HOST, PORT))
@@ -95,7 +105,7 @@ def multithread_server(n_threads, top_k_frequent):
         client_threads = [
             threading.Thread(
                 target=communicate,
-                args=(active_queue, top_k_most_frequent)
+                args=(active_queue, top_k_most_frequent, program_lock)
             )
             for _ in range(int(n_threads))
         ]

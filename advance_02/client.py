@@ -6,7 +6,7 @@ import queue
 import click
 
 HOST = "127.0.0.1"
-PORT = 5000
+PORT = 5004
 
 
 def send_url_to_server(current_queue):
