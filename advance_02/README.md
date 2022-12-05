@@ -17,14 +17,28 @@ python server.py NUM_WORKERS TOP_K_WORDS
 NUM_WORKERS - число потоков на сервере.
 TOP_K_WORDS - число самых популярных слов, которые хочет увдеть пользователь.
 
+### Example:
+
+```
+python server.py 10 4
+```
+
 
 ## Start client:
 
 ```
 python client.py NUM_WORKERS FILE_CONTAINIG_URLS
 ```
+
 NUM_WORKERS - число потоков на клиентском приложениии.
 FILE_CONTAINIG_URLS - файл, в котором перечислены урлы, каждый урл на новой строке.
+
+### Example:
+
+```
+python client.py 10 urls.txt
+```
+
 
 # Testing:
 ```
