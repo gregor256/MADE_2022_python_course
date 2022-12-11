@@ -1,12 +1,12 @@
-"python" exists on the page https://docs.python.org/3/library/asyncio.html
+"python" exists on the page https://www.python.org/
 
-"python" exists on the page https://en.wikipedia.org/wiki/Green_tree_python
+"python" exists on the page https://docs.python.org/3/library/asyncio.html
 
 "python" does not exist on the page https://en.wikipedia.org/wiki/Main_Page
 
-"python" exists on the page https://en.wikipedia.org/wiki/Java_(software_platform)
+"python" exists on the page https://en.wikipedia.org/wiki/Green_tree_python
 
 "python" exists on the page https://en.wikipedia.org/wiki/Java_(programming_language)
 
-"python" exists on the page https://www.python.org/
+"python" exists on the page https://en.wikipedia.org/wiki/Java_(software_platform)
 

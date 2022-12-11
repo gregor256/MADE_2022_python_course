@@ -1,12 +1,13 @@
-import aiohttp
+# pylint: disable=missing-module-docstring
+# pylint: disable=missing-class-docstring
+# pylint: disable=missing-function-docstring
+
+
 import asyncio
+import aiohttp
 import click
 
 OUTPUT_Q_SIZE = 10
-
-
-# async def tt_fetch_url(url, session, s):
-#     return await fetch_url(url, session) + s
 
 
 async def fetch_url(url, session):
@@ -15,15 +16,14 @@ async def fetch_url(url, session):
 
         if 'python' in data.decode().lower():
             return f'"python" exists on the page {url}'
-        else:
-            return f'"python" does not exist on the page {url}'
+        return f'"python" does not exist on the page {url}'
 
 
 async def dump_worker(_result_queue, filename):
     while True:
         processing_result = await _result_queue.get()
         try:
-            with open(filename, 'a') as output:
+            with open(filename, 'a', encoding='utf-8') as output:
                 print(processing_result, file=output)
         finally:
             _result_queue.task_done()
@@ -59,7 +59,7 @@ async def write_processed_data(_result_queue, filename):
 
 
 async def readline(urls_queue, input_filename):
-    with open(input_filename, 'r') as input_file:
+    with open(input_filename, 'r', encoding='utf-8') as input_file:
         for line in input_file:
             await urls_queue.put(line)
 
@@ -78,10 +78,10 @@ async def process_urls(n_workers, urls_file, output_file):
 @click.argument('n_workers')
 @click.argument('urls_file')
 def main_url_processing(n_workers, urls_file, output_file='output.txt'):
-    with open('output.txt', 'w') as output:
+    with open('output.txt', 'w', encoding='utf-8') as output:
         output.truncate()
     asyncio.run(process_urls(int(n_workers), urls_file, output_file))
 
 
 if __name__ == '__main__':
-    main_url_processing()
+    main_url_processing()  # pylint: disable=no-value-for-parameter
