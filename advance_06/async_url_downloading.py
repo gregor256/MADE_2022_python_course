@@ -2,38 +2,60 @@ import aiohttp
 import asyncio
 import click
 
+OUTPUT_Q_SIZE = 10
+
+
+# async def tt_fetch_url(url, session, s):
+#     return await fetch_url(url, session) + s
+
 
 async def fetch_url(url, session):
     async with session.get(url) as resp:
-        # time.sleep(1)
         data = await resp.read()
 
         if 'python' in data.decode().lower():
-            return f'"Python" exists on the page {url}'
+            return f'"python" exists on the page {url}'
         else:
-            return f'"Python" does not exists on the page {url}'
+            return f'"python" does not exist on the page {url}'
 
 
-async def worker(queue, session):
+async def dump_worker(_result_queue, filename):
     while True:
-        url = await queue.get()
+        processing_result = await _result_queue.get()
         try:
-            res = await fetch_url(url, session)
-            print(res)
+            with open(filename, 'a') as output:
+                print(processing_result, file=output)
         finally:
-            queue.task_done()
+            _result_queue.task_done()
 
 
-async def fetch_batch_urls(queue, workers):
+async def processing_worker(_urls_queue, _result_queue, session):
+    while True:
+        url = await _urls_queue.get()
+        try:
+            result = await fetch_url(url, session)
+            await _result_queue.put(result)
+        finally:
+            _urls_queue.task_done()
+
+
+async def fetch_batch_urls(_urls_queue, _result_queue, workers):
     async with aiohttp.ClientSession() as session:
         tasks = [
-            asyncio.create_task(worker(queue, session))
+            asyncio.create_task(processing_worker(_urls_queue, _result_queue, session))
             for _ in range(workers)
         ]
-        await queue.join()
+        await _urls_queue.join()
 
         for task in tasks:
             task.cancel()
+
+
+async def write_processed_data(_result_queue, filename):
+    task = asyncio.create_task(dump_worker(_result_queue, filename))
+    if _result_queue.qsize() > 0:
+        await _result_queue.join()
+        task.cancel()
 
 
 async def readline(urls_queue, input_filename):
@@ -42,10 +64,12 @@ async def readline(urls_queue, input_filename):
             await urls_queue.put(line)
 
 
-async def process_urls(n_workers, urls_file):
+async def process_urls(n_workers, urls_file, output_file):
     urls_queue = asyncio.Queue(maxsize=n_workers)
+    result_queue = asyncio.Queue(maxsize=OUTPUT_Q_SIZE)
     gather = asyncio.gather(readline(urls_queue, urls_file),
-                            fetch_batch_urls(urls_queue, n_workers)
+                            fetch_batch_urls(urls_queue, result_queue, n_workers),
+                            write_processed_data(result_queue, output_file)
                             )
     await gather
 
@@ -53,9 +77,11 @@ async def process_urls(n_workers, urls_file):
 @click.command(name="main")
 @click.argument('n_workers')
 @click.argument('urls_file')
-def main(n_workers, urls_file):
-    asyncio.run(process_urls(int(n_workers), urls_file))
+def main_url_processing(n_workers, urls_file, output_file='output.txt'):
+    with open('output.txt', 'w') as output:
+        output.truncate()
+    asyncio.run(process_urls(int(n_workers), urls_file, output_file))
 
 
 if __name__ == '__main__':
-    main()
+    main_url_processing()
