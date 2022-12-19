@@ -1,3 +1,5 @@
 python_homework_env
 .idea
 .venv
+*__pycache__
+*.pytest_cache
