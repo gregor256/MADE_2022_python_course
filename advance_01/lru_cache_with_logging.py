@@ -1,8 +1,8 @@
 """LRUCache"""
 from collections import deque
 import logging
+import logging.config
 import argparse
-
 
 log_conf = {
     "version": 1,
@@ -18,7 +18,7 @@ log_conf = {
         "file_handler": {
             "class": "logging.FileHandler",
             "level": "DEBUG",
-            "filename": "file_handler.log",
+            "filename": "cache.log",
             "formatter": "for_file",
 
         },
@@ -34,8 +34,8 @@ log_conf = {
             "handlers": ["file_handler"],
         },
         "std": {
-            "level": "WARNING",
-            "handlers": ["std_handler"],
+            "level": "DEBUG",
+            "handlers": ["std_handler", "file_handler"]
         },
     },
 }
@@ -86,20 +86,14 @@ class LRUCache:
 
 
 if __name__ == '__main__':
+    logging.config.dictConfig(log_conf)
+    logger = logging.getLogger('file')
+    logger.debug('--- ANOTHER ONE START OF THE PROGRAM ---.')
+
     parser = argparse.ArgumentParser(description='logging_method')
     parser.add_argument('-s', help='logging_method', default='file')
     args = parser.parse_args()
     method = args.s
-
-    if method == 'file':
-        logging.basicConfig(
-            level=logging.DEBUG,
-            filename="cache.log",
-            format="%(asctime)s\t%(levelname)s\t%(message)s",
-            force=True
-        )
-        logger = logging.getLogger('file')
-        logger.debug('--- ANOTHER ONE START OF THE PROGRAM ---.')
 
     cache = LRUCache(limit=1, logging_method=method)
     cache.set('key_1', 'val_1')
