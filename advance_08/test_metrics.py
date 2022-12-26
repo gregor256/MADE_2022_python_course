@@ -2,7 +2,7 @@ import time
 import stat_metrics
 
 
-def test_stat_metrics():
+def test_stat_metrics() -> None:
     with stat_metrics.Stats.timer("calc"):  # 0.1
         time.sleep(1)
         res = stat_metrics.calc(3)  # 3
@@ -10,10 +10,10 @@ def test_stat_metrics():
     stat_metrics.Stats.count("calc").add()
     stat_metrics.Stats.avg("calc").add(res)
 
-    t1 = 0
+    start_time = 0.0
     res = stat_metrics.calc(7)  # 7
-    t2 = 3
-    stat_metrics.Stats.timer("calc").add(t2 - t1)  # 0.3
+    end_time = 3.0
+    stat_metrics.Stats.timer("calc").add(end_time - start_time)  # 0.3
     stat_metrics.Stats.count("calc").add()
     stat_metrics.Stats.avg("calc").add(res)
 
@@ -35,4 +35,4 @@ def test_stat_metrics():
 
     collected_metrics = stat_metrics.Stats.collect()
 
-    assert collected_metrics == {}
+    assert not collected_metrics
