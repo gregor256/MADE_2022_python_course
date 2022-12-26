@@ -97,7 +97,12 @@ class Stats:
     @classmethod
     def collect(cls) -> dict:
         tmp = cls.collection
-        cls.collection = {}
+        cls.collection: dict = {}
+        cls.instances: dict = {
+            'timer': [],
+            'avg': [],
+            'count': []
+        }
         return tmp
 
 
